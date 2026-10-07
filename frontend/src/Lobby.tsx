@@ -1,7 +1,7 @@
-// Lobby: lista de jogadores, upload de foto, config do host, iniciar.
+// Lobby: lista de jogadores, upload de foto, config do host (modal), iniciar.
 import { useState } from "preact/hooks";
 import { api } from "./api";
-import { Badge, Panel } from "./components";
+import { Badge, ConfigModal, OptionGroup, Panel } from "./components";
 import type { DisplayMode, RevealMode, RoomState } from "./types";
 
 const DISPLAY_LABELS: Record<DisplayMode, string> = {
@@ -16,6 +16,7 @@ const DISPLAY_LABELS: Record<DisplayMode, string> = {
 export function Lobby({ state }: { state: RoomState }) {
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [configOpen, setConfigOpen] = useState(false);
   const me = state.players.find((p) => p.id === state.you);
   const allPhotos = state.players.every((p) => p.has_photo);
   const needGen = ["GENERATED_ONLY", "BOTH", "SEQ_CHILD_FIRST", "SEQ_GENERATED_FIRST", "RANDOM"]
@@ -35,8 +36,14 @@ export function Lobby({ state }: { state: RoomState }) {
       (e) => setError((e as Error).message));
 
   return (
-    <div class="wrap">
-      <h1>SALA {state.code}</h1>
+    <div class="wrap lobby">
+      <header class="room-header">
+        <h1>SALA {state.code}</h1>
+        {state.is_host && (
+          <button class="gear" aria-label="Configurações da sala" title="Configurações"
+            onClick={() => setConfigOpen(true)}>⚙</button>
+        )}
+      </header>
       <p class="muted">Compartilhe o link: <a href={`${location.origin}/?c=${state.code}`}>{location.origin}/?c={state.code}</a></p>
 
       <Panel>
@@ -65,35 +72,53 @@ export function Lobby({ state }: { state: RoomState }) {
         )}
       </Panel>
 
+      {error && <p class="error">{error}</p>}
+
+      {/* Botão de início: separado da config, fixo no rodapé e sempre visível (host). */}
       {state.is_host && (
-        <Panel>
-          <h2>CONFIGURAÇÃO (HOST)</h2>
-          <label class="muted">Exibição da foto</label>
-          <select value={state.config.display_mode}
-            onChange={(e) => setConfig({ display_mode: (e.target as HTMLSelectElement).value as DisplayMode })}>
-            {Object.entries(DISPLAY_LABELS).map(([k, v]) => <option value={k}>{v}</option>)}
-          </select>
-          <div style="height:0.5rem" />
-          <label class="muted">Revelação</label>
-          <select value={state.config.reveal_mode}
-            onChange={(e) => setConfig({ reveal_mode: (e.target as HTMLSelectElement).value as RevealMode })}>
-            <option value="END_OF_GAME">No fim de todas as rodadas</option>
-            <option value="PER_ROUND">No fim de cada rodada</option>
-          </select>
-          <div style="height:0.5rem" />
-          <label class="muted">Alvos por rodada</label>
-          <select value={String(state.config.targets_per_round)}
-            onChange={(e) => setConfig({ targets_per_round: Number((e.target as HTMLSelectElement).value) })}>
-            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-          </select>
-          <div style="height:0.75rem" />
-          <button class="btn ok" disabled={!canStart} onClick={() => api.start(state.code).catch((e) => setError((e as Error).message))}>
+        <div class="start-bar">
+          {!canStart && (
+            <p class="muted center" style="font-size:0.7rem;margin:0 0 0.5rem">
+              Precisa de 3+ jogadores, todas as fotos{needGen ? " e gerações prontas" : ""}.
+            </p>
+          )}
+          <button class="btn ok start-btn" disabled={!canStart}
+            onClick={() => api.start(state.code).catch((e) => setError((e as Error).message))}>
             INICIAR JOGO
           </button>
-          {!canStart && <p class="muted" style="font-size:0.7rem">Precisa de 3+ jogadores, todas as fotos{needGen ? " e gerações prontas" : ""}.</p>}
-        </Panel>
+        </div>
       )}
-      {error && <p class="error">{error}</p>}
+
+      {state.is_host && configOpen && (
+        <ConfigModal title="CONFIGURAÇÃO (HOST)" onClose={() => setConfigOpen(false)}>
+          <OptionGroup<DisplayMode>
+            label="Exibição da foto"
+            value={state.config.display_mode}
+            onChange={(v) => setConfig({ display_mode: v })}
+            options={(Object.keys(DISPLAY_LABELS) as DisplayMode[]).map((k) => ({ value: k, label: DISPLAY_LABELS[k] }))}
+          />
+          <OptionGroup<RevealMode>
+            label="Revelação"
+            value={state.config.reveal_mode}
+            onChange={(v) => setConfig({ reveal_mode: v })}
+            options={[
+              { value: "END_OF_GAME", label: "No fim de todas as rodadas" },
+              { value: "PER_ROUND", label: "No fim de cada rodada" },
+            ]}
+          />
+          <OptionGroup<number>
+            label="Alvos por rodada"
+            compact
+            value={state.config.targets_per_round}
+            onChange={(v) => setConfig({ targets_per_round: v })}
+            options={[
+              { value: 1, label: "1" },
+              { value: 2, label: "2" },
+              { value: 3, label: "3" },
+            ]}
+          />
+        </ConfigModal>
+      )}
     </div>
   );
 }
