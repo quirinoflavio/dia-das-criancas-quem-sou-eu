@@ -1,0 +1,36 @@
+{
+  "decisions": [
+    {
+      "id": "scoring-rule",
+      "title": "Como pontuar os votos?",
+      "options": ["1 ponto por acerto (acertou quem é o alvo)", "Pontos ponderados (mais pontos para alvos mais difíceis)"],
+      "recommended": "1 ponto por acerto (acertou quem é o alvo)",
+      "answer": "1 ponto por acerto (acertou quem é o alvo)"
+    },
+    {
+      "id": "voting-timer",
+      "title": "A votação encerra como?",
+      "options": ["Host encerra manualmente a rodada", "Temporizador por rodada (ex. 30s)", "Encerra sozinho quando todos votam, com opção do host forçar"],
+      "recommended": "Encerra sozinho quando todos votam, com opção do host forçar",
+      "answer": "Encerra sozinho quando todos votam, com opção do host forçar"
+    },
+    {
+      "id": "image-api-provider",
+      "title": "Qual API de geração de imagem assumir no design?",
+      "options": ["Google Gemini (imagem)", "Abstrair atrás de uma interface e deixar o provedor plugável"],
+      "recommended": "Abstrair atrás de uma interface e deixar o provedor plugável",
+      "answer": "Abstrair atrás de uma interface e deixar o provedor plugável"
+    }
+  ],
+  "blocking": null,
+  "context": {"template": "greenfield real-time multiplayer web game (FastAPI + WebSocket + SPA, tema 8-bit pixel art)"},
+  "pending": [
+    {
+      "id": "visual-style",
+      "title": "Qual sabor de retrô para o visual?",
+      "options": ["Anos 80/90 pop-infantil (cores vivas, memphis, formas geométricas)", "Álbum de fotos vintage (sépia, papel, polaroids, cantoneiras)", "Fliperama 8-bit / pixel art (fonte pixelada, neon)"],
+      "recommended": "Álbum de fotos vintage (sépia, papel, polaroids, cantoneiras)",
+      "answer": "Fliperama 8-bit / pixel art (fonte pixelada, neon)"
+    }
+  ]
+}

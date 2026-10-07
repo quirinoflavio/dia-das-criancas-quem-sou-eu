@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Env / dados
+.env
+/data/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+app/static/
+
+# OS/editor
+.DS_Store
+Thumbs.db
