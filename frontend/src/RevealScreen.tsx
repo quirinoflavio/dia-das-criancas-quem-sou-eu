@@ -38,8 +38,8 @@ export function RevealScreen({ state, send }: {
   );
 }
 
-export function FinishedScreen({ state, onPlayAgain }: {
-  state: RoomState; onPlayAgain: () => void;
+export function FinishedScreen({ state, send, onLeave }: {
+  state: RoomState; send: (m: object) => void; onLeave: () => void;
 }) {
   const reveals = state.reveals ?? [];
   return (
@@ -50,9 +50,12 @@ export function FinishedScreen({ state, onPlayAgain }: {
         <summary class="display" style="font-size:0.7rem;cursor:pointer">VER TODAS AS REVELAÇÕES</summary>
         {reveals.flatMap((r) => r.targets).map((t) => <RevealBlock t={t} key={t.target_id} />)}
       </details>
-      {state.is_host && (
-        <button class="btn ok" onClick={onPlayAgain}>JOGAR DE NOVO</button>
+      {state.is_host ? (
+        <button class="btn ok" onClick={() => send({ type: "play_again" })}>VOLTAR AO SALÃO</button>
+      ) : (
+        <p class="muted center blink">Aguardando o host voltar ao salão…</p>
       )}
+      <button class="btn secondary" onClick={onLeave}>SAIR</button>
     </div>
   );
 }

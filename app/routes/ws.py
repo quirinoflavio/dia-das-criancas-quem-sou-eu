@@ -10,6 +10,7 @@ from app.domain.engine import (
     close_round,
     maybe_autoclose_round,
     register_vote,
+    reset_to_lobby,
     score_round,
 )
 from app.domain.enums import Phase, RevealMode
@@ -88,6 +89,8 @@ async def _handle(mgr, code: str, token: str, msg: dict, ws: WebSocket) -> None:
                 advance(room)
         elif mtype == "next":
             advance(room)
+        elif mtype == "play_again":
+            reset_to_lobby(room)
         else:
             await ws.send_json({"type": "error", "code": "bad_type",
                                 "message": f"Tipo desconhecido: {mtype}"})

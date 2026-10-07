@@ -1,7 +1,16 @@
 """Testes da máquina de estados e fluxo de revelação."""
 from __future__ import annotations
 
-from app.domain.engine import advance, register_vote, score_round, start_game
+import pytest
+
+from app.domain.engine import (
+    GameError,
+    advance,
+    register_vote,
+    reset_to_lobby,
+    score_round,
+    start_game,
+)
 from app.domain.enums import Phase, RevealMode, RoundStatus
 from tests.helpers import make_room, seeded_rng
 
@@ -67,3 +76,41 @@ def test_no_double_scoring_when_autoclosed_then_advanced():
     advance(room)  # não deve pontuar de novo a mesma rodada
     for v in voters:
         assert room.players[v].score == first_scores[v]
+
+
+def test_reset_to_lobby_reuses_room_and_resets_scores():
+    room = _start(3, k=1, reveal=RevealMode.END_OF_GAME, generated=True)
+    # joga o jogo inteiro com todos acertando -> acumula placar
+    for _ in range(len(room.rounds)):
+        _vote_all_correct(room)
+        advance(room)
+    assert room.phase == Phase.FINISHED
+    assert any(p.score > 0 for p in room.players.values())
+
+    photos_before = {
+        pid: (p.child_photo.id, p.generated_photo.id)
+        for pid, p in room.players.items()
+    }
+    players_before = set(room.players.keys())
+
+    reset_to_lobby(room)
+
+    assert room.phase == Phase.LOBBY
+    assert room.rounds == []
+    assert room.current_round_idx == 0
+    assert all(p.score == 0 for p in room.players.values())
+    # jogadores e fotos (criança + gerada) preservados — opção A
+    assert set(room.players.keys()) == players_before
+    for pid, p in room.players.items():
+        assert (p.child_photo.id, p.generated_photo.id) == photos_before[pid]
+
+    # a sala pode jogar de novo normalmente
+    start_game(room, rng=seeded_rng())
+    assert room.phase == Phase.PLAYING
+
+
+def test_reset_to_lobby_rejected_before_finished():
+    room = _start(3, k=1)
+    assert room.phase == Phase.PLAYING
+    with pytest.raises(GameError):
+        reset_to_lobby(room)

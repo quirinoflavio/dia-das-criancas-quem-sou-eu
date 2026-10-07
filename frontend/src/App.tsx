@@ -20,8 +20,8 @@ export function App() {
   // até o usuário informar o apelido e entrar.
   const enter = (c: string) => { setCode(c); setEntered(true); };
 
-  const playAgain = () => {
-    // volta para a Home para criar nova sala reusando o apelido guardado
+  const leave = () => {
+    // sai da sala e volta para a Home (sala permanece no servidor)
     setEntered(false);
     setCode(null);
     history.replaceState({}, "", "/");
@@ -56,7 +56,7 @@ export function App() {
       {(state.phase === "LOBBY" || state.phase === "GENERATING") && <Lobby state={state} />}
       {state.phase === "PLAYING" && <RoundScreen state={state} send={send} />}
       {state.phase === "REVEAL" && <RevealScreen state={state} send={send} />}
-      {state.phase === "FINISHED" && <FinishedScreen state={state} onPlayAgain={playAgain} />}
+      {state.phase === "FINISHED" && <FinishedScreen state={state} send={send} onLeave={leave} />}
     </>
   );
 }

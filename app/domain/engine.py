@@ -266,3 +266,24 @@ def _goto_next_round_or_reveal(room: Room) -> None:
         # acabaram as rodadas (todas já pontuadas/reveladas durante o jogo)
         room.phase = Phase.FINISHED
     room.touch()
+
+
+# --------------------------------------------------------------------------- #
+# Voltar ao salão (nova partida reaproveitando a mesma sala)
+# --------------------------------------------------------------------------- #
+def reset_to_lobby(room: Room) -> None:
+    """Volta a sala de FINISHED para LOBBY para uma nova partida.
+
+    Reaproveita jogadores, fotos de criança e config. Zera placar, rodadas e
+    votos; mantém as fotos geradas (opção A — não regenera, não gasta API).
+    Todos os clientes recebem o novo estado via WS, então o grupo volta junto
+    ao salão em vez de o host sair para a Home.
+    """
+    if room.phase != Phase.FINISHED:
+        raise GameError("bad_phase", "Só é possível voltar ao salão após o fim do jogo.")
+    room.rounds = []
+    room.current_round_idx = 0
+    for p in room.players.values():
+        p.score = 0
+    room.phase = Phase.LOBBY
+    room.touch()
