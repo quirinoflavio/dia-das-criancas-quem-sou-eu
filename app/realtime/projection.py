@@ -116,6 +116,10 @@ def project_room(room: Room, viewer_id: str) -> dict[str, Any]:
     }
 
     if room.phase in (Phase.LOBBY, Phase.GENERATING):
+        # O viewer pode ver a PRÓPRIA foto (nunca a dos outros — §8).
+        me = room.players.get(viewer_id)
+        if me and me.child_photo:
+            base["my_photo_url"] = _image_url(room.code, me.child_photo.id)
         return base
 
     rnd = room.current_round

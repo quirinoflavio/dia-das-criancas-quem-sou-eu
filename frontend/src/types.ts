@@ -63,6 +63,7 @@ export interface RoomState {
   is_host: boolean;
   config: RoomConfig;
   players: PlayerView[];
+  my_photo_url?: string;
   num_rounds: number;
   current_round_idx: number;
   round?: RoundView;

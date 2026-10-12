@@ -241,6 +241,48 @@ input {
   color: var(--fg-soft);
   line-height: 1.3;
 }
+.photo-ok {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--ok);
+  text-shadow: 2px 2px 0 var(--outline);
+  margin: 0 0 0.5rem;
+}
+.photo-upload {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.photo-thumb {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 96px;
+  border: var(--pixel) solid var(--outline);
+  box-shadow: inset 0 0 0 3px var(--accent-2);
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: auto; /* a foto real NÃO é pixelizada */
+}
+.photo-thumb.empty {
+  background: var(--bg-panel);
+}
+.photo-thumb.empty span {
+  font-family: var(--font-display);
+  font-size: 0.5rem;
+  color: var(--fg-soft);
+}
+.photo-actions { flex: 1 1 auto; display: flex; flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+/* <label> estilizado como botão de upload precisa de cursor/alinhamento */
+.photo-actions label.btn { cursor: pointer; display: inline-flex; align-items: center; }
 
 /* Cabeçalho da sala: título + engrenagem de config */
 .room-header {

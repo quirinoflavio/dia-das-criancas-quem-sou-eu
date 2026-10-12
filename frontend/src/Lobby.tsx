@@ -1,6 +1,6 @@
 // Lobby: lista de jogadores, upload de foto, config do host (modal), iniciar.
 import { useState } from "preact/hooks";
-import { api } from "./api";
+import { api, imageUrl } from "./api";
 import { Badge, ConfigModal, OptionGroup, Panel } from "./components";
 import type { DisplayMode, RevealMode, RoomState } from "./types";
 
@@ -61,15 +61,31 @@ export function Lobby({ state }: { state: RoomState }) {
 
       <Panel>
         <h2>SUA FOTO DE CRIANÇA</h2>
-        {preview && <img src={preview} style="max-width:160px;display:block;margin:8px 0" />}
-        <input type="file" accept="image/jpeg,image/png,image/webp" capture="user"
-          onChange={(e) => {
-            const f = (e.target as HTMLInputElement).files?.[0];
-            if (f) upload(f);
-          }} />
-        {me?.gen_status === "FAILED" && (
-          <button class="btn" onClick={() => api.regen(state.code)}>TENTAR GERAR DE NOVO</button>
-        )}
+        {(() => {
+          const thumb = preview ?? (state.my_photo_url ? imageUrl(state.my_photo_url) : null);
+          return (
+            <div class="photo-upload">
+              <div class={`photo-thumb${thumb ? "" : " empty"}`}>
+                {thumb ? <img src={thumb} alt="Sua foto" /> : <span>SEM FOTO</span>}
+              </div>
+              <div class="photo-actions">
+                {me?.has_photo && <p class="photo-ok">✓ Foto enviada</p>}
+                <label class="btn secondary">
+                  {me?.has_photo ? "TROCAR FOTO" : "ENVIAR FOTO"}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" capture="user"
+                    style="display:none"
+                    onChange={(e) => {
+                      const f = (e.target as HTMLInputElement).files?.[0];
+                      if (f) upload(f);
+                    }} />
+                </label>
+                {me?.gen_status === "FAILED" && (
+                  <button class="btn" onClick={() => api.regen(state.code)}>TENTAR GERAR DE NOVO</button>
+                )}
+              </div>
+            </div>
+          );
+        })()}
       </Panel>
 
       {error && <p class="error">{error}</p>}
