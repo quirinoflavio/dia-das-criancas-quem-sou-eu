@@ -117,16 +117,16 @@ a { color: var(--accent-2); }
 }
 .pixel-frame img {
   display: block;
-  /* Caixa responsiva com teto nas DUAS dimensões: uma foto retrato gigante
-     não estoura mais a tela. O recorte/encaixe é definido pela variante. */
-  width: clamp(180px, 70vw, 300px);
+  /* Caixa responsiva com PISO e TETO (clamp): foto pequena cresce até um
+     mínimo confortável conforme a tela, foto grande encolhe até o teto.
+     object-fit:contain preserva a foto INTEIRA (nunca recorta) e o aspecto. */
+  width: clamp(200px, 65vw, 300px);
+  height: clamp(200px, 65vw, 300px);
   max-width: 100%;
-  height: clamp(180px, 70vw, 300px);
-  max-height: 42vh;
+  max-height: 46vh;
+  object-fit: contain;
   image-rendering: auto; /* a foto real NÃO é pixelizada */
 }
-.pixel-frame.fit-cover img { object-fit: cover; }     /* votação: uniforme, recorta */
-.pixel-frame.fit-contain img { object-fit: contain; } /* revelação: foto inteira */
 .pixel-frame .label {
   font-family: var(--font-display);
   font-size: 0.6rem;

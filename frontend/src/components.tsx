@@ -8,11 +8,9 @@ export function Panel({ children }: { children: ComponentChildren }) {
   return <div class="panel">{children}</div>;
 }
 
-export function PixelFrame({ src, label, fit = "contain" }: {
-  src: string; label?: string; fit?: "cover" | "contain";
-}) {
+export function PixelFrame({ src, label }: { src: string; label?: string }) {
   return (
-    <div class={`pixel-frame fit-${fit}`}>
+    <div class="pixel-frame">
       <img src={imageUrl(src)} alt={label ?? "foto"} />
       {label && <div class="label">{label}</div>}
     </div>
