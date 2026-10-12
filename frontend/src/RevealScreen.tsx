@@ -45,18 +45,29 @@ export function FinishedScreen({ state, send, onLeave }: {
   const allTargets = reveals.flatMap((r) => r.targets);
   return (
     <div class="wrap gameover">
-      <h1 class="center">GAME OVER</h1>
+      <div class="crt-scanlines" aria-hidden="true" />
+
+      <h1 class="center gameover-title">
+        <span class="go-word">GAME</span> <span class="go-word go-word-2">OVER</span>
+      </h1>
 
       {state.scoreboard && (
         <Scoreboard rows={state.scoreboard} winners={state.winners} reveals={allTargets} />
       )}
+
+      <p class="insert-coin muted display center" style="font-size:0.55rem;margin:1rem 0 0.5rem">
+        <span class="coin" aria-hidden="true"><span class="coin-face">★</span></span>
+        INSERT COIN TO CONTINUE
+      </p>
 
       <h2 class="center" style="margin-top:1rem">REVELAÇÕES</h2>
       <RevealGallery targets={allTargets} />
 
       <div class="start-bar gameover-actions">
         {state.is_host ? (
-          <button class="btn ok start-btn" onClick={() => send({ type: "play_again" })}>VOLTAR AO SALÃO</button>
+          <button class="btn ok start-btn press-start" onClick={() => send({ type: "play_again" })}>
+            VOLTAR AO SALÃO
+          </button>
         ) : (
           <p class="muted center blink" style="margin:0 0 0.5rem">Aguardando o host voltar ao salão…</p>
         )}

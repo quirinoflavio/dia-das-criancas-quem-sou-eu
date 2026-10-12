@@ -156,10 +156,6 @@ a { color: var(--accent-2); }
 
 /* placar / high score */
 .scoreboard { font-family: var(--font-display); font-size: 0.7rem; }
-.scoreboard .row { display: flex; justify-content: space-between; padding: 0.4rem 0; }
-.scoreboard .row.gold { color: var(--gold); }
-.scoreboard .row.silver { color: var(--silver); }
-.scoreboard .row.bronze { color: var(--bronze); }
 
 .wrap { max-width: 720px; margin: 0 auto; padding: 1rem; }
 .center { text-align: center; }
@@ -372,29 +368,41 @@ input {
    colunas rígidas e cor por rank. Sem moldura — o próprio preto é o enquadramento. */
 .scoreboard.arcade {
   font-family: var(--font-display);
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0.5rem 0.25rem;
+  /* Tela CRT escura com uma moldura sutil — presença de gabinete sem o anel
+     dourado chapado que havíamos reprovado. */
+  background:
+    linear-gradient(180deg, #05050f 0%, #0b0b1e 100%);
+  border: var(--pixel) solid #000;
+  box-shadow:
+    inset 0 0 0 2px rgba(53, 199, 255, 0.25),
+    inset 0 0 24px rgba(0, 0, 0, 0.8);
+  padding: 1rem 0.9rem 0.6rem;
 }
 .hiscore-head {
   text-align: center;
   color: var(--accent-3);
-  font-size: 0.95rem;
-  text-shadow: var(--pixel) var(--pixel) 0 var(--outline);
-  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+  letter-spacing: 2px;
+  text-shadow: var(--pixel) var(--pixel) 0 var(--outline), 0 0 10px rgba(255, 210, 63, 0.5);
+  margin-bottom: 0.9rem;
 }
 .sb-row {
   display: grid;
   grid-template-columns: 4.4rem 1fr 3rem;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.45rem 0;
-  font-size: 0.62rem;
-  border-bottom: 2px solid rgba(255, 210, 63, 0.12);
+  padding: 0.5rem 0.5rem;
+  font-size: 0.64rem;
+  border-bottom: 2px solid rgba(255, 210, 63, 0.1);
 }
 .sb-row.with-hits { grid-template-columns: 4.4rem 1fr 2.8rem 3rem; }
-.sb-row.sb-header { color: var(--fg-soft); font-size: 0.5rem; border-bottom-color: var(--accent-3); }
+.sb-row.sb-header {
+  color: var(--accent-2);
+  font-size: 0.48rem;
+  letter-spacing: 1px;
+  border-bottom: 2px solid rgba(53, 199, 255, 0.4);
+  padding-bottom: 0.4rem;
+}
 .sb-row > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; justify-self: start; }
 .sb-row .num {
   text-align: right;
@@ -405,14 +413,18 @@ input {
 .sb-row .rank { display: inline-flex; align-items: center; gap: 0.3rem; justify-self: start; }
 .sb-row .rank em { font-style: normal; font-size: 0.5rem; color: var(--fg-soft); }
 .sb-row .pname { text-align: left; justify-self: start; white-space: nowrap; }
-.sb-row .score { color: var(--ok); }
+.sb-row .score { color: var(--ok); font-size: 0.82rem; text-shadow: 0 0 8px rgba(59, 255, 106, 0.4); }
 .sb-row.gold   .rank em { color: var(--gold); }
 .sb-row.silver .rank em { color: var(--silver); }
 .sb-row.bronze .rank em { color: var(--bronze); }
 .sb-row.gold   .pname { color: var(--gold); }
 .sb-row.silver .pname { color: var(--silver); }
 .sb-row.bronze .pname { color: var(--bronze); }
-.sb-row.champ { background: rgba(255, 207, 63, 0.1); }
+/* Campeão: faixa dourada translúcida + leve brilho, sem outline chapado */
+.sb-row.champ {
+  background: linear-gradient(90deg, rgba(255, 207, 63, 0.18), rgba(255, 207, 63, 0.04));
+  box-shadow: inset 3px 0 0 var(--gold);
+}
 
 /* Galeria de revelações (uma por vez) */
 .gallery { margin: 0.5rem 0; }
@@ -438,6 +450,60 @@ input {
 .gallery-dots .dot.on { background: var(--accent-3); }
 
 .gameover-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* ---- Nostalgia fliperama na tela de resultado ---- */
+.gameover { position: relative; }
+
+/* Scanlines CRT sobre toda a tela de resultado (decorativo) */
+.crt-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.18) 3px,
+    rgba(0, 0, 0, 0.18) 3px
+  );
+  animation: crt-flicker 3s steps(60) infinite;
+}
+@keyframes crt-flicker {
+  0%, 97%, 100% { opacity: 0.6; }
+  98% { opacity: 0.45; }
+  99% { opacity: 0.75; }
+}
+
+/* "GAME OVER" com entrada dramática + pisca, estilo tela de arcade */
+.gameover-title {
+  font-size: 1.6rem;
+  letter-spacing: 3px;
+  margin: 0.5rem 0 1rem;
+}
+.gameover-title .go-word {
+  display: inline-block;
+  color: var(--accent);
+  text-shadow: var(--pixel) var(--pixel) 0 var(--outline), 0 0 12px rgba(255, 59, 59, 0.6);
+  animation: go-drop 0.5s ease-out both, go-pulse 1.2s ease-in-out 0.5s infinite;
+}
+.gameover-title .go-word-2 { animation-delay: 0.15s, 0.65s; }
+@keyframes go-drop {
+  0% { transform: translateY(-120%) scale(1.4); opacity: 0; }
+  70% { transform: translateY(8%) scale(1); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes go-pulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.06); filter: brightness(1.4); }
+}
+
+/* CTA "PRESS START": pulso de brilho chamando a ação */
+.press-start { animation: press-pulse 1s ease-in-out infinite; }
+@keyframes press-pulse {
+  0%, 100% { box-shadow: inset 0 0 0 2px var(--outline), var(--pixel) var(--pixel) 0 var(--outline); }
+  50% { box-shadow: inset 0 0 0 2px var(--outline), var(--pixel) var(--pixel) 0 var(--outline), 0 0 16px var(--ok); }
+}
 
 /* Acessibilidade: respeita redução de movimento */
 /* ---- Moeda de arcade girando (INSERT COIN) ---- */
