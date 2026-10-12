@@ -5,7 +5,7 @@ import { Panel } from "./components";
 import type { RoomConfig } from "./types";
 
 const DEFAULT_CONFIG: RoomConfig = {
-  display_mode: "BOTH",
+  display_mode: "CHILD_ONLY",
   reveal_mode: "END_OF_GAME",
   targets_per_round: 1,
   max_players: 12,

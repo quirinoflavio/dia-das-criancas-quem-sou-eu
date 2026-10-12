@@ -51,7 +51,10 @@ class Player(BaseModel):
 
 
 class RoomConfig(BaseModel):
-    display_mode: DisplayMode = DisplayMode.BOTH
+    # Padrão simplificado: só a foto de criança. A geração por IA continua
+    # implementada (adapters, projeção e modos no enum), mas desativada no
+    # fluxo padrão e bloqueada na UI do lobby até ser reativada.
+    display_mode: DisplayMode = DisplayMode.CHILD_ONLY
     reveal_mode: RevealMode = RevealMode.END_OF_GAME
     targets_per_round: int = Field(default=1, ge=1, le=3)
     max_players: int = Field(default=MAX_PLAYERS, ge=MIN_PLAYERS, le=MAX_PLAYERS)

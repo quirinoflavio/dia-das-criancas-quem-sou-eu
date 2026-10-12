@@ -93,8 +93,10 @@ export function Lobby({ state }: { state: RoomState }) {
         <ConfigModal title="CONFIGURAÇÃO (HOST)" onClose={() => setConfigOpen(false)}>
           <OptionGroup<DisplayMode>
             label="Exibição da foto"
-            value={state.config.display_mode}
-            onChange={(v) => setConfig({ display_mode: v })}
+            value={"CHILD_ONLY"}
+            disabled
+            note="Por enquanto só a foto de criança. Os modos com a foto gerada por IA chegam em breve."
+            onChange={() => { /* bloqueado: geração desativada por ora */ }}
             options={(Object.keys(DISPLAY_LABELS) as DisplayMode[]).map((k) => ({ value: k, label: DISPLAY_LABELS[k] }))}
           />
           <OptionGroup<RevealMode>

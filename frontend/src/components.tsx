@@ -175,18 +175,20 @@ export function ConfigModal({ title, onClose, children }: {
 /* Grupo de opções estilo arcade (segmented radio) — substitui <select>.
    Acessível: role=radiogroup, aria-checked, navegável por teclado. */
 export function OptionGroup<T extends string | number>({
-  label, value, options, onChange, compact,
+  label, value, options, onChange, compact, disabled, note,
 }: {
   label: string;
   value: T;
   options: { value: T; label: string }[];
   onChange: (v: T) => void;
   compact?: boolean;
+  disabled?: boolean;
+  note?: string;
 }) {
   return (
-    <div class={`optgroup${compact ? " compact" : ""}`}>
+    <div class={`optgroup${compact ? " compact" : ""}${disabled ? " disabled" : ""}`}>
       <span class="optlabel">{label}</span>
-      <div class="options" role="radiogroup" aria-label={label}>
+      <div class="options" role="radiogroup" aria-label={label} aria-disabled={disabled}>
         {options.map((o) => {
           const selected = o.value === value;
           return (
@@ -195,9 +197,11 @@ export function OptionGroup<T extends string | number>({
               class={`opt${selected ? " selected" : ""}`}
               role="radio"
               aria-checked={selected}
-              tabIndex={selected ? 0 : -1}
-              onClick={() => onChange(o.value)}
+              aria-disabled={disabled}
+              tabIndex={disabled ? -1 : selected ? 0 : -1}
+              onClick={() => { if (!disabled) onChange(o.value); }}
               onKeyDown={(e: KeyboardEvent) => {
+                if (disabled) return;
                 if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onChange(o.value); }
               }}
             >
@@ -206,6 +210,7 @@ export function OptionGroup<T extends string | number>({
           );
         })}
       </div>
+      {note && <span class="optnote">{note}</span>}
     </div>
   );
 }
