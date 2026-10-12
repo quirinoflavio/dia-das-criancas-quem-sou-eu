@@ -38,7 +38,10 @@ export function Home({ onEnter, initialCode }: {
   return (
     <div class="wrap center">
       <h1>QUEM SOU EU?</h1>
-      <p class="muted display" style="font-size:0.6rem">INSERT COIN · DIA DAS CRIANÇAS</p>
+      <p class="insert-coin muted display" style="font-size:0.6rem">
+        <span class="coin" aria-hidden="true"><span class="coin-face">★</span></span>
+        INSERT COIN · DIA DAS CRIANÇAS
+      </p>
       <Panel>
         <input
           placeholder="SEU APELIDO"

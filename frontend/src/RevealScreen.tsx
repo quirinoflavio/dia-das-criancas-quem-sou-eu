@@ -1,5 +1,5 @@
-// Telas de revelação (por rodada) e final (placar + jogar de novo).
-import { PixelFrame, Scoreboard } from "./components";
+// Telas de revelação (por rodada) e final (placar arcade + galeria).
+import { RevealGallery, PixelFrame, Scoreboard } from "./components";
 import type { RevealTarget, RoomState } from "./types";
 
 function RevealBlock({ t }: { t: RevealTarget }) {
@@ -42,20 +42,26 @@ export function FinishedScreen({ state, send, onLeave }: {
   state: RoomState; send: (m: object) => void; onLeave: () => void;
 }) {
   const reveals = state.reveals ?? [];
+  const allTargets = reveals.flatMap((r) => r.targets);
   return (
-    <div class="wrap">
-      <h1>GAME OVER</h1>
-      {state.scoreboard && <Scoreboard rows={state.scoreboard} winners={state.winners} />}
-      <details>
-        <summary class="display" style="font-size:0.7rem;cursor:pointer">VER TODAS AS REVELAÇÕES</summary>
-        {reveals.flatMap((r) => r.targets).map((t) => <RevealBlock t={t} key={t.target_id} />)}
-      </details>
-      {state.is_host ? (
-        <button class="btn ok" onClick={() => send({ type: "play_again" })}>VOLTAR AO SALÃO</button>
-      ) : (
-        <p class="muted center blink">Aguardando o host voltar ao salão…</p>
+    <div class="wrap gameover">
+      <h1 class="center">GAME OVER</h1>
+
+      {state.scoreboard && (
+        <Scoreboard rows={state.scoreboard} winners={state.winners} reveals={allTargets} />
       )}
-      <button class="btn secondary" onClick={onLeave}>SAIR</button>
+
+      <h2 class="center" style="margin-top:1rem">REVELAÇÕES</h2>
+      <RevealGallery targets={allTargets} />
+
+      <div class="start-bar gameover-actions">
+        {state.is_host ? (
+          <button class="btn ok start-btn" onClick={() => send({ type: "play_again" })}>VOLTAR AO SALÃO</button>
+        ) : (
+          <p class="muted center blink" style="margin:0 0 0.5rem">Aguardando o host voltar ao salão…</p>
+        )}
+        <button class="btn secondary start-btn" onClick={onLeave}>SAIR</button>
+      </div>
     </div>
   );
 }
