@@ -3,10 +3,27 @@ import type { RoomConfig } from "./types";
 
 const KEY = "quemsoueu.identity";
 
+// Gera um id hex sem depender de crypto.randomUUID, que só existe em
+// contexto seguro (HTTPS/localhost). Em HTTP puro (ex.: acesso por IP),
+// randomUUID é undefined — então caímos para getRandomValues, e por fim Math.random.
+function randomHex(): string {
+  const c = globalThis.crypto;
+  if (c?.randomUUID) return c.randomUUID().replace(/-/g, "");
+  if (c?.getRandomValues) {
+    const b = new Uint8Array(16);
+    c.getRandomValues(b);
+    return Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+  }
+  // Último recurso (navegador muito antigo / sem Web Crypto).
+  let s = "";
+  for (let i = 0; i < 32; i++) s += Math.floor(Math.random() * 16).toString(16);
+  return s;
+}
+
 export function getIdentity(): string {
   let t = localStorage.getItem(KEY);
   if (!t) {
-    t = crypto.randomUUID().replace(/-/g, "");
+    t = randomHex();
     localStorage.setItem(KEY, t);
   }
   return t;
