@@ -72,7 +72,7 @@ export function Lobby({ state }: { state: RoomState }) {
                 {me?.has_photo && <p class="photo-ok">✓ Foto enviada</p>}
                 <label class="btn secondary">
                   {me?.has_photo ? "TROCAR FOTO" : "ENVIAR FOTO"}
-                  <input type="file" accept="image/jpeg,image/png,image/webp" capture="user"
+                  <input type="file" accept="image/jpeg,image/png,image/webp"
                     style="display:none"
                     onChange={(e) => {
                       const f = (e.target as HTMLInputElement).files?.[0];
