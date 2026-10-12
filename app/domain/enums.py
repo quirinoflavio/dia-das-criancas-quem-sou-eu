@@ -40,6 +40,13 @@ class RoundStatus(str, Enum):
     REVEALED = "REVEALED"
 
 
+# Interruptor de feature: enquanto a geração por IA está desativada no produto,
+# QUALQUER modo é forçado a CHILD_ONLY na montagem das rodadas. Isso cobre
+# salas antigas (criadas com BOTH) e configs manipuladas, não só o default.
+# Para religar a geração, basta voltar isto para True.
+GENERATION_ENABLED = False
+
+
 # Modos que exigem a foto gerada estar pronta antes do jogo começar.
 MODES_REQUIRING_GENERATED = {
     DisplayMode.GENERATED_ONLY,

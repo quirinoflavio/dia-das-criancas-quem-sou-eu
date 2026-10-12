@@ -8,6 +8,7 @@ from app.domain.enums import (
     MODES_REQUIRING_GENERATED,
     RANDOM_CHOICES,
     SEQUENTIAL_MODES,
+    GENERATION_ENABLED,
     DisplayMode,
     GenStatus,
     Phase,
@@ -36,6 +37,9 @@ class GameError(Exception):
 # Pré-condições e montagem (B2, B5)
 # --------------------------------------------------------------------------- #
 def requires_generated(mode: DisplayMode) -> bool:
+    # Com a geração desativada, nenhum modo exige foto gerada.
+    if not GENERATION_ENABLED:
+        return False
     return mode in MODES_REQUIRING_GENERATED
 
 
@@ -65,6 +69,10 @@ def check_can_start(room: Room) -> None:
 
 
 def _resolve_display(mode: DisplayMode, rng: random.Random) -> DisplayMode:
+    # Enquanto a geração está desligada, só a foto de criança é exibida —
+    # independentemente do modo configurado (cobre salas antigas com BOTH).
+    if not GENERATION_ENABLED:
+        return DisplayMode.CHILD_ONLY
     if mode == DisplayMode.RANDOM:
         return rng.choice(RANDOM_CHOICES)
     return mode

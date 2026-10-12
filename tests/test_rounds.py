@@ -36,7 +36,10 @@ def test_rounds_k1():
     assert all(len(r.targets) == 1 for r in rounds)
 
 
-def test_random_mode_resolves_per_target_within_choices():
+def test_random_mode_resolves_per_target_within_choices(monkeypatch):
+    # A resolução de RANDOM só é exercida com a geração LIGADA; desligada,
+    # tudo cai em CHILD_ONLY (coberto por test_generation_disabled_forces_child_only).
+    monkeypatch.setattr("app.domain.engine.GENERATION_ENABLED", True)
     room = make_room(6, display=DisplayMode.RANDOM, k=2, generated=True)
     rounds = build_rounds(room, rng=random.Random(1))
     for r in rounds:
@@ -66,7 +69,9 @@ def test_start_blocked_when_photo_missing():
     assert e.value.code == "photos_pending"
 
 
-def test_start_blocked_when_generation_pending():
+def test_start_blocked_when_generation_pending(monkeypatch):
+    # Pré-condição de geração só vale com a feature LIGADA.
+    monkeypatch.setattr("app.domain.engine.GENERATION_ENABLED", True)
     room = make_room(3, display=DisplayMode.BOTH, generated=False)
     # tem fotos de criança mas não geradas
     for p in room.players.values():
@@ -74,6 +79,18 @@ def test_start_blocked_when_generation_pending():
     with pytest.raises(GameError) as e:
         check_can_start(room)
     assert e.value.code == "generation_pending"
+
+
+def test_generation_disabled_forces_child_only():
+    # Com a geração DESLIGADA (default do produto), uma sala configurada com
+    # BOTH não exige geração e só exibe a foto de criança em todas as rodadas.
+    room = make_room(4, display=DisplayMode.BOTH, generated=False)
+    for p in room.players.values():
+        p.gen_status = GenStatus.NONE
+    check_can_start(room)  # não deve levantar generation_pending
+    rounds = build_rounds(room, rng=seeded_rng())
+    for r in rounds:
+        assert all(m == DisplayMode.CHILD_ONLY for m in r.display_per_target.values())
 
 
 def test_start_ok_child_only():
