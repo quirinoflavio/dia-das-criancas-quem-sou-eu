@@ -20,8 +20,8 @@ export function RoundScreen({ state, send }: {
           <div key={t.target_id} class="panel">
             <h2>QUEM É?</h2>
             <div class="center">
-              {t.child && <PixelFrame src={t.child} label="CRIANÇA" />}
-              {t.generated && <PixelFrame src={t.generated} label="HOJE" />}
+              {t.child && <PixelFrame src={t.child} label="CRIANÇA" fit="cover" />}
+              {t.generated && <PixelFrame src={t.generated} label="HOJE" fit="cover" />}
               {!t.child && !t.generated && <p class="muted">Aguardando imagem…</p>}
             </div>
             {isHost && t.seq_stage === 0 && (
